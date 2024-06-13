@@ -1,6 +1,14 @@
 # TolaDe
 A general WEB API using NodeJS.
 
+
+## 关键字
+
+- Node.js;
+- Koa;
+- Prisma;
+
+## 项目目录及说明
 ```
 |-- .env                    # 环境变量
 |-- |-- types
@@ -36,3 +44,30 @@ A general WEB API using NodeJS.
 |-- tsconfig.json           # TypeScript 配置文件
 |-- README.md               # 项目说明文档
 ```
+
+## 安装与环境配置
+
+```bash
+npm install prisma --save-dev
+```
+```bash
+npx prisma init --datasource-provider mysql
+```
+```bash
+npm install -g dotenv-cli
+```
+配置DATABASE_URL
+
+.env
+DATABASE_URL=mysql://USER:PASSWORD@HOST:PORT/DATABASE
+```bash
+npm migrate
+```
+
+```bash
+npm install @prisma/client
+```
+```bash
+prisma generate
+```
+## 构建步骤
