@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "dotenv -e .env/.env -- tsx src/index.ts",
 		"init": "npx prisma init",
-		"migrate": "dotenv -e .env/.env -- npx prisma migrate dev --name init",
+		"migrate": "dotenv -e .env/.env -- npx prisma migrate dev",
 		"generate": "dotenv -e .env/.env -- npx prisma generate",
 		"studio": "dotenv -e .env/.env -- npx prisma studio --browser chrome --port 5555"
 	},
