@@ -4,11 +4,11 @@
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
-		"dev": "dotenv -e .env/.env -- tsx src/index.ts",
+		"dev": "dotenv -e .env/.env.development -- tsx src/index.ts",
 		"init": "npx prisma init",
-		"migrate": "dotenv -e .env/.env -- npx prisma migrate dev",
-		"generate": "dotenv -e .env/.env -- npx prisma generate",
-		"studio": "dotenv -e .env/.env -- npx prisma studio --browser chrome --port 5555"
+		"migrate": "dotenv -e .env/.env.development -- npx prisma migrate dev",
+		"generate": "dotenv -e .env/.env.development -- npx prisma generate",
+		"studio": "dotenv -e .env/.env.development -- npx prisma studio --browser chrome --port 5555"
 	},
 	"dependencies": {
 		"@koa/bodyparser": "^5.1.1",
