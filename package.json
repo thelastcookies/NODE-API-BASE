@@ -12,6 +12,7 @@
 	},
 	"dependencies": {
 		"@koa/bodyparser": "^5.1.1",
+		"@koa/cors": "^5.0.0",
 		"@koa/router": "^12.0.1",
 		"@prisma/client": "^5.15.0",
 		"koa": "^2.15.3",
@@ -22,6 +23,7 @@
 		"@commitlint/cli": "^19.3.0",
 		"@commitlint/config-conventional": "^19.2.2",
 		"@types/koa": "^2.15.0",
+		"@types/koa__cors": "^5.0.0",
 		"@types/koa__router": "^12.0.4",
 		"@types/node": "^20.14.1",
 		"dotenv": "^16.4.5",
@@ -32,6 +34,6 @@
 		"typescript": "^5.4.5"
 	},
 	"prisma": {
-		"seed": "ts-node prisma/seed.ts"
+		"seed": "dotenv -e .env/.env.development -- tsx prisma/seed.ts"
 	}
 }
