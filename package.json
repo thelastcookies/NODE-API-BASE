@@ -16,7 +16,8 @@
 		"@prisma/client": "^5.15.0",
 		"koa": "^2.15.3",
 		"koa-body": "^6.0.1",
-		"koa-response-time": "^2.1.0"
+		"koa-response-time": "^2.1.0",
+		"log4js": "^6.9.1"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^19.3.0",
