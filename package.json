@@ -2,12 +2,11 @@
 	"name": "node-api-base",
 	"private": true,
 	"version": "0.0.0",
-	"type": "module",
 	"scripts": {
 		"dev": "dotenv -e .env/.env.development -- nodemon src/index.ts",
-		"init": "npx prisma init",
-		"migrate": "dotenv -e .env/.env.development -- npx prisma migrate dev",
+		"init": "npx prisma init --datasource-provider mysql",
 		"generate": "dotenv -e .env/.env.development -- npx prisma generate",
+		"migrate": "dotenv -e .env/.env.development -- npx prisma migrate dev",
 		"studio": "dotenv -e .env/.env.development -- npx prisma studio --browser chrome --port 5555"
 	},
 	"dependencies": {
