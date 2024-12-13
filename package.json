@@ -5,8 +5,8 @@
 	"scripts": {
 		"dev": "dotenv -e .env/.env.development -- nodemon src/index.ts",
 		"init": "npx prisma init --datasource-provider mysql",
-		"generate": "dotenv -e .env/.env.development -- npx prisma generate",
 		"migrate": "dotenv -e .env/.env.development -- npx prisma migrate dev",
+		"generate": "dotenv -e .env/.env.development -- npx prisma generate",
 		"studio": "dotenv -e .env/.env.development -- npx prisma studio --browser chrome --port 5555"
 	},
 	"dependencies": {
