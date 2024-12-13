@@ -23,27 +23,31 @@ A general WEB API using NodeJS.
 |-- .husky                  # Git hooks 脚本
 |-- |-- commit-msg
 |-- |-- pre-commit
+|-- logs                    # 日志文件目录
+|-- prisma                  # Prisma 目录
+|-- |-- schema.prisma       # Prisma 数据库模型
+|-- |-- seed.ts             # 数据库初始数据
 |-- src                     # 源代码目录，包含项目的主要代码文件
 |-- |-- controller          # 控制器层，处理请求并返回响应
+|-- |-- |-- index.ts        # 各控制器的总输出文件
 |-- |-- |-- user.ts         # 示例用户控制器文件
 |-- |-- middleware          # 中间件层，用于处理请求的中间件函数
-|-- |-- |-- authMiddleware.ts   # 示例身份验证中间件
-|-- |-- model               # 数据模型层，定义数据结构和数据库交互
-|-- |-- |-- userModel.ts    # 示例用户数据模型
+|-- |-- |-- logger.ts       # 日志中间件
 |-- |-- router              # 路由层，定义应用程序的路由
-|-- |-- |-- userRoutes.ts   # 示例用户路由
+|-- |-- |-- index.ts        # 路由的总输出文件
+|-- |-- |-- user.ts         # 示例用户路由
 |-- |-- service             # 服务层，包含业务逻辑和数据处理
-|-- |-- |-- userService.ts  # 示例用户服务
+|-- |-- |-- index.ts        # 各服务的总输出文件
+|-- |-- |-- user.ts         # 示例用户服务
 |-- |-- utils               # 工具库，包含辅助函数和工具类
-|-- |-- |-- helper.ts       # 示例辅助函数
-|-- |-- config              # 配置层，存放配置文件
-|-- |-- |-- config.ts       # 示例配置文件
-|-- |-- app.ts              # 应用入口文件，配置 Koa 实例和中间件
-|-- |-- server.ts           # 启动服务器文件，监听端口并启动服务
+|-- |-- |-- log.ts          # 日志工具库 log4js 配置
+|-- |-- index.ts            # 应用入口文件
+|-- |-- prisma.ts           # Prisma 客户端实例
 |-- .gitignore              # Git 忽略文件
+|-- LICENSE                 # License 文件
 |-- package.json            # 项目的配置文件，包含依赖、脚本等
-|-- tsconfig.json           # TypeScript 配置文件
 |-- README.md               # 项目说明文档
+|-- tsconfig.json           # TypeScript 配置文件
 ```
 
 ## 安装与环境配置
