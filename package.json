@@ -5,6 +5,9 @@
 	"scripts": {
 		"dev": "dotenv -e .env/.env.development -- nodemon src/index.ts",
 		"init": "npx prisma init --datasource-provider mysql",
+		"pull": "dotenv -e .env/.env.development -- npx prisma db pull",
+		"baseline": "dotenv -e .env/.env.development -- npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > prisma/migrations/0_init/migration.sql",
+		"resolve": "dotenv -e .env/.env.development -- npx prisma migrate resolve --applied 0_init",
 		"migrate": "dotenv -e .env/.env.development -- npx prisma migrate dev",
 		"generate": "dotenv -e .env/.env.development -- npx prisma generate",
 		"studio": "dotenv -e .env/.env.development -- npx prisma studio --browser chrome --port 5555"

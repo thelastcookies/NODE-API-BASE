@@ -89,11 +89,13 @@ pnpm init
 
 初始化后会生成 prisma/schema.prisma 文件，用于定义数据库模型。
 
+如果在初始化 Prisma 时，数据库中并不存在相关的业务表，则继续之后的章节来从零开始创建数据库表。
+
+如果数据库中已经存在相关业务表，则直接跳转到[自省](#introspection自省)章节将数据库表内容同步到 Prisma。
+
 #### 定义数据模型
 
-在 schema.prisma 中描述数据库的表结构和关系。
-
-如：
+在 schema.prisma 中描述数据库的表结构和关系。如：
 
 ```prisma
 model User {
@@ -113,7 +115,89 @@ model User {
 pnpm migrate
 ```
 
-该操作会将数据模型的变更迁移到数据库中，可能会造成数据的丢失，在实际开发中要谨慎处理。
+该指令会在 `prisma/migrations` 目录下生成迁移内容，并将数据模型的迁移记录同步到数据库 `_prisma_migrations` 表中。
+
+首次迁移会重置数据库，可能造成数据的丢失，在实际开发中要谨慎处理。
+
+#### Introspection（自省）
+
+对于已经存在的数据库，可以通过指令来获取已有的数据库表，并将数据模型写入 `schema.prisma` 中。
+
+```shell
+pnpm pull
+```
+
+在实际生产中，数据库表和字段名的命名风格（如 snake_case）可能与 Prisma 的风格（camelCase）不同。
+
+假设通过自省获得了以下基于 snake_case 表示法的模型：
+
+```prisma
+model my_user {
+  user_id    Int     @id @default(autoincrement())
+  first_name String? 
+  last_name  String  @unique
+}
+```
+
+如果使用这个模型来生成 Prisma Client，那么会获得一个 snake_case 风格的 API，可能并不符合传统 JS/TS 的命名风格。
+
+```ts
+const user = await prisma.my_user.create({
+  data: {
+    first_name: 'Alice',
+    last_name: 'Smith',
+  },
+});
+```
+
+想要生成符合预期的 API， 可以通过使用 `@map` 和 `@@map` 来进行转换与关联。
+
+`@map` 用来重命名字段名，`@@map` 用来重命名表名。
+
+```prisma
+model MyUser {
+  userId    Int     @id @default(autoincrement()) @map("user_id")
+  firstName String? @map("first_name")
+  lastName  String  @unique @map("last_name")
+
+  @@map("my_user")
+}
+```
+
+```ts
+const user = await prisma.myUser.create({
+  data: {
+    firstName: 'Alice',
+    lastName: 'Smith',
+  },
+})
+```
+
+#### 校准（Baseline）
+
+对于已经存在的数据库，在迁移之前需要先进行校准（Baseline），为已包含数据且无法重置的数据库创建初始化迁移记录。
+
+首先，需要创建 migrations 目录并在其中添加一个空文件夹来容纳初始化迁移的内容，如：
+
+```shell
+mkdir -p prisma/migrations/0_init
+```
+
+然后使用指令来生成迁移文件。
+
+```shell
+pnpm baseline
+```
+
+运行指令后，会在 `prisma/migrations/0_init` 目录下生成 `migration.sql`。检查生成的 sql 是否准确无误。
+
+之后，使用指令来将此次迁移标记为已完成。
+
+```shell
+pnpm resolve
+```
+
+这个指令会将 `0_init` 的迁移记录同步到数据库 `_prisma_migrations` 表中。
 
 #### 生成 Prisma Client
 
