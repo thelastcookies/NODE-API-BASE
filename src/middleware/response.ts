@@ -3,25 +3,34 @@ import type { Context, Next } from 'koa';
 const responseMiddleware = async (ctx: Context, next: Next) => {
   try {
     await next();
-    const code = ctx.status || 200;
-    if (ctx.body === undefined) {
+    const code = ctx.status;
+    if (String(code).startsWith('2') || String(code).startsWith('3')) {
       ctx.body = {
+        success: true,
         code,
-        message: 'success',
-        data: null,
+        msg: 'success',
+        data: ctx.body ?? null,
+      };
+    } else if (String(code).startsWith('4') || String(code).startsWith('5')) {
+      ctx.body = {
+        success: false,
+        code,
+        msg: (ctx.body as any)?.msg ?? '',
+        detail: (ctx.body as any)?.detail || null,
       };
     } else {
       ctx.body = {
-        code,
-        message: 'success',
-        data: ctx.body,
+        success: false,
+        code: 500,
+        msg: 'Internal Server Error',
+        detail: null,
       };
     }
   } catch (err: any) {
-    ctx.status = err.status || 500;
     ctx.body = {
-      code: ctx.status,
-      message: err.message || 'Internal Server Error',
+      success: false,
+      code: 500,
+      msg: err.msg || 'Internal Server Error',
       detail: err.detail || null,
     };
   }
