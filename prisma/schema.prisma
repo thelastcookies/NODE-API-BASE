@@ -13,28 +13,67 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String   @db.VarChar(255)
-  content   String?
-  published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
+model city {
+  id          Int     @id @default(autoincrement())
+  name        String  @default("") @db.Char(35)
+  countryCode String  @default("") @map("country_code") @db.Char(3)
+  district    String  @default("") @db.Char(20)
+  population  Int     @default(0)
+  country     country @relation(fields: [countryCode], references: [code], onUpdate: Restrict, map: "city_ibfk_1")
+
+  @@index([countryCode], map: "country_code")
 }
 
-model Profile {
-  id     Int     @id @default(autoincrement())
-  bio    String?
-  user   User    @relation(fields: [userId], references: [id])
-  userId Int     @unique
+model country {
+  code            String            @id @default("") @db.Char(3)
+  name            String            @default("") @db.Char(52)
+  continent       countryContinent  @default(Asia)
+  region          String            @default("") @db.Char(26)
+  surfaceArea     Float             @default(0.00) @map("surface_area") @db.Float
+  indepYear       Int?              @map("indep_year") @db.SmallInt
+  population      Int               @default(0)
+  lifeExpectancy  Float?            @map("life_expectancy") @db.Float
+  gnp             Float?            @db.Float
+  gnpOld          Float?            @map("gnp_old") @db.Float
+  localName       String            @default("") @map("local_name") @db.Char(45)
+  governmentForm  String            @default("") @map("government_form") @db.Char(45)
+  headOfState     String?           @map("head_of_state") @db.Char(60)
+  capital         Int?
+  code2           String            @default("") @map("code_2") @db.Char(2)
+  city            city[]
+  countryLanguage countryLanguage[]
+
+  @@index([code], map: "code")
+  @@index([code], map: "code_2")
 }
 
-model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  name    String?
-  posts   Post[]
-  profile Profile?
+model countryLanguage {
+  countryCode String                    @default("") @map("country_code") @db.Char(3)
+  language    String                    @default("") @db.Char(30)
+  isOfficial  countryLanguageIsOfficial @default(F) @map("is_official")
+  percentage  Float                     @default(0.0) @db.Float
+  country     country                   @relation(fields: [countryCode], references: [code], onUpdate: Restrict, map: "country_language_ibfk_1")
+
+  @@id([countryCode, language])
+  @@index([countryCode], map: "country_code")
+  @@map("country_language")
+}
+
+enum countryLanguageIsOfficial {
+  T
+  F
+
+  @@map("country_language_is_official")
+}
+
+enum countryContinent {
+  Asia
+  Europe
+  North_America @map("North America")
+  Africa
+  Oceania
+  Antarctica
+  South_America @map("South America")
+
+  @@map("country_continent")
 }

@@ -1,1 +1,1 @@
-export * as userController from "./user";
+export * as countryController from "./country";
