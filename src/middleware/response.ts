@@ -22,15 +22,16 @@ const responseMiddleware = async (ctx: Context, next: Next) => {
       ctx.body = {
         success: false,
         code: 500,
-        msg: 'Internal Server Error',
-        detail: null,
+        msg: (ctx.body as any)?.msg || 'Internal Server Error',
+        detail: (ctx.body as any)?.detail || null,
       };
     }
   } catch (err: any) {
+    ctx.status = 500;
     ctx.body = {
       success: false,
       code: 500,
-      msg: err.msg || 'Internal Server Error',
+      msg: err.message || 'Internal Server Error',
       detail: err.detail || null,
     };
   }
