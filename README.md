@@ -93,6 +93,20 @@ pnpm init
 
 如果数据库中已经存在相关业务表，则直接跳转到[自省](#introspection自省)章节将数据库表内容同步到 Prisma。
 
+#### 基本配置
+
+Prisma 会针对不同架构的发布平台生成不同的 Query Engine，因此在 `schema.prisma` 文件中，根据实际的目标平台配置
+`binaryTargets`。
+
+如下：
+
+```prisma
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["linux-musl-arm64-openssl-3.0.x"]
+}
+```
+
 #### 定义数据模型
 
 在 schema.prisma 中描述数据库的表结构和关系。如：
@@ -241,4 +255,91 @@ pnpm install nodemon -D
 pnpm dev
 ```
 
-## 构建步骤
+## 构建思路
+
+使用 Esbuild 将接口工程打包压缩，再使用 Docker 制作镜像并发布。
+
+## 构建步骤：Esbuild
+
+Esbuild 是一个轻量，高性能，简单易上手的 JavaScript 打包工具和编译器。
+
+核心功能包括代码打包、Tree Shaking、Minify、TypeScript 转译等。
+
+打包指令：
+
+```shell
+esbuild src/index.ts --bundle --outdir=dist --platform=node
+```
+
+## 构建步骤：Docker
+
+Docker 是一种开源的容器化平台，可以协助开发者打包、分发和运行应用程序及其依赖环境。
+
+它通过轻量级的容器技术，使应用程序在不同环境中保持一致性，简化开发、测试和部署流程。
+
+### 拉取基本镜像
+
+```shell
+sudo docker pull node:21-alpine
+```
+
+### 构建
+
+```shell
+docker build -t node-api .
+```
+
+### Troubleshoot
+
+#### 最佳实践
+
+先将基本镜像，如：`node:21-alpine` 使用 `docker pull` 拉取到本地。
+
+这样可以跳过 Docker build 时可能存在的验证问题，如 `failed to resolve source metadata`。
+
+```shell
+sudo docker pull node:21-alpine 
+```
+
+#### Docker 访问超时问题
+
+如果在拉取镜像时存在超时问题，则需要设置镜像源。
+
+Docker 守护进程配置文件路径：
+
+```
+~/.docker/daemon.json
+```
+
+在该文件中添加下列配置，并重启 Docker。
+
+```json
+{
+  "registry-mirrors": [
+    "https://hub.geekery.cn/",
+    "https://docker.unsee.tech",
+    "https://dockerpull.org"
+  ]
+}
+```
+
+#### Prisma `Could not locate the Query Engine`
+
+目前看来是 Prisma 存在的一个 BUG，prisma 在生成后需要将 Query Engine 一起加入打包。
+
+因此需要在 Dockerfile 中将生成的 `libquery_engine-[xxx].so.node` 复制到同样的目录下。
+
+```Dockerfile
+COPY 'node_modules/.pnpm/@prisma+client@5.15.0_prisma@5.15.0/node_modules/.prisma/client/libquery_engine-linux-musl-arm64-openssl-3.0.x.so.node/' '/app/dist/node_modules/.pnpm/@prisma+client@5.15.0_prisma@5.15.0/node_modules/.prisma/client/'
+```
+
+## Docker 部署
+
+```
+sudo docker run -d \
+  --name node-api \
+  -p 8192:8192 \
+  --restart=unless-stopped \
+  node-api
+```
+
