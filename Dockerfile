@@ -7,14 +7,12 @@ LABEL authors="thelastcookies"
 WORKDIR /app
 
 # 复制构建后的代码到容器
-COPY dist/ /app/dist/
-COPY .env/.env /app/dist/.env/
-COPY .env/.env.production /app/dist/.env/
+COPY dist/ /app/
+COPY .env/.env .env/.env.production /app/.env/
+COPY 'node_modules/.pnpm/@prisma+client@5.15.0_prisma@5.15.0/node_modules/.prisma/client/libquery_engine-linux-musl-arm64-openssl-3.0.x.so.node/' '/app/node_modules/.pnpm/@prisma+client@5.15.0_prisma@5.15.0/node_modules/.prisma/client/'
 
-COPY 'node_modules/.pnpm/@prisma+client@5.15.0_prisma@5.15.0/node_modules/.prisma/client/libquery_engine-linux-musl-arm64-openssl-3.0.x.so.node/' '/app/dist/node_modules/.pnpm/@prisma+client@5.15.0_prisma@5.15.0/node_modules/.prisma/client/'
-
+# 端口暴露
 EXPOSE 8192
-# 设置应用运行的默认命令
-#CMD ["node", "dist/index.js"]
 
-ENTRYPOINT ["top", "-b"]
+# 设置容器启动时的固定命令
+CMD ["node", "index.js"]
