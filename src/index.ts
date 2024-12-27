@@ -11,7 +11,7 @@ import responseMiddleware from './middleware/response.ts';
 import notFoundMiddleware from './middleware/not-found.ts';
 
 dotenv.config({
-  path: ['.env/.env', '.env/.env.development'],
+  path: ['.env/.env', '.env/.env.development', '.env/.env.production'],
 });
 
 const ipAddr = ip.address();
