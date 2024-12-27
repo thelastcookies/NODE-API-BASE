@@ -330,12 +330,12 @@ Docker 守护进程配置文件路径：
 因此需要在 Dockerfile 中将生成的 `libquery_engine-[xxx].so.node` 复制到同样的目录下。
 
 ```Dockerfile
-COPY 'node_modules/.pnpm/@prisma+client@5.15.0_prisma@5.15.0/node_modules/.prisma/client/libquery_engine-linux-musl-arm64-openssl-3.0.x.so.node/' '/app/dist/node_modules/.pnpm/@prisma+client@5.15.0_prisma@5.15.0/node_modules/.prisma/client/'
+COPY 'node_modules/.pnpm/@prisma+client@6.1.0_prisma@6.1.0/node_modules/.prisma/client/libquery_engine-linux-musl-arm64-openssl-3.0.x.so.node/' '/app/dist/node_modules/.pnpm/@prisma+client@6.1.0_prisma@6.1.0/node_modules/.prisma/client/'
 ```
 
 ## Docker 部署
 
-```
+```shell
 sudo docker run -d \
   --name node-api \
   -p 8192:8192 \
