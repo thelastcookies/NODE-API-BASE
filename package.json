@@ -12,6 +12,7 @@
 		"generate": "dotenv -e .env/.env.development -- npx prisma generate",
 		"studio": "dotenv -e .env/.env.development -- npx prisma studio --browser chrome --port 5555",
 		"build": "pnpm build:docker",
+		"build:push": "pnpm build:docker:push",
 		"build:esbuild": "esbuild src/index.ts --bundle --outdir=dist --platform=node",
 		"build:docker": "pnpm build:esbuild && docker build --platform linux/aarch64 -t thelastcookies/node-api:latest .",
 		"build:docker:tar": "pnpm build:docker && docker save -o node-api.tar thelastcookies/node-api:latest",
