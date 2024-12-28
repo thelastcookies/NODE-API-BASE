@@ -1,7 +1,7 @@
 {
 	"name": "node-api-base",
 	"private": true,
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"scripts": {
 		"dev": "dotenv -e .env/.env.development -- nodemon src/index.ts",
 		"p-init": "npx prisma init --datasource-provider mysql",
