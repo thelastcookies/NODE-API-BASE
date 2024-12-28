@@ -277,16 +277,95 @@ Docker 是一种开源的容器化平台，可以协助开发者打包、分发�
 
 它通过轻量级的容器技术，使应用程序在不同环境中保持一致性，简化开发、测试和部署流程。
 
+### Login
+
+首先在命令行或者桌面应用中登录 Docker 账户。
+
 ### 拉取基本镜像
 
+根据项目的实际情况进行基本镜像的拉取，如：
+
 ```shell
-sudo docker pull node:21-alpine
+# 适用于当前主机架构的镜像
+sudo docker pull node:22-alpine
+
+# 指定 arm64 架构的镜像
+sudo docker pull --platform=arm64 node:22-alpine
+
+# 指定 amd64 架构的镜像
+sudo docker pull --platform=amd64 node:22-alpine
 ```
 
-### 构建
+### 默认构建（当前主机架构）
 
 ```shell
-docker build -t node-api .
+docker build -t thelastcookies/node-api .
+```
+
+### 指定架构构建
+
+```shell
+docker build --platform linux/amd64 -t thelastcookies/node-api .
+```
+
+### 使用 BuildX（多架构构建）
+
+#### 检查是否启用了 BuildX
+
+```shell
+docker buildx version
+```
+
+#### 创建构建实例
+
+如果没有启用 BuildX 构建实例，运行以下命令：
+
+```shell
+docker buildx create --use
+```
+
+这会创建并使用一个新的 BuildX 构建上下文。
+
+验证当前的构建实例是否已启用：
+
+```shell
+docker buildx ls
+```
+
+#### 指定目标架构
+
+使用 BuildX 的 --platform 参数来指定需要支持的架构。如：
+
+```shell
+docker buildx build --platform linux/amd64,linux/arm64 -t thelastcookies/node-api .
+```
+
+#### 保存
+
+将多架构镜像保存到本地，供调试使用。
+
+```shell
+docker buildx build --platform linux/amd64,linux/arm64 -t your_image_name:tag --output type=docker .
+```
+
+#### 推送
+
+将镜像推送到注册表。
+
+默认情况下，多架构镜像需要推送到镜像注册表（如 Docker Hub、Harbor 等），因为本地 Docker Daemon 无法直接存储多架构镜像。
+
+添加 --push 参数将镜像推送到远程注册表：
+
+```shell
+docker buildx build --platform linux/amd64,linux/arm64 -t your_image_name:tag --push .
+```
+
+#### 验证
+
+构建完成后，验证镜像是否支持多架构：
+
+```shell
+docker buildx imagetools inspect your_image_name:tag
 ```
 
 ### Troubleshoot
@@ -330,16 +409,115 @@ Docker 守护进程配置文件路径：
 因此需要在 Dockerfile 中将生成的 `libquery_engine-[xxx].so.node` 复制到同样的目录下。
 
 ```Dockerfile
-COPY 'node_modules/.pnpm/@prisma+client@6.1.0_prisma@6.1.0/node_modules/.prisma/client/libquery_engine-linux-musl-arm64-openssl-3.0.x.so.node/' '/app/dist/node_modules/.pnpm/@prisma+client@6.1.0_prisma@6.1.0/node_modules/.prisma/client/'
+COPY 'node_modules/.pnpm/@prisma+client@6.1.0_prisma@6.1.0/node_modules/.prisma/client/<相应的包>' '/app/dist/node_modules/.pnpm/@prisma+client@6.1.0_prisma@6.1.0/node_modules/.prisma/client/'
 ```
 
 ## Docker 部署
+
+### 线下部署
+
+#### 打包
+
+使用 `docker save` 指令将镜像打包为 tar 文件。
+
+```shell
+docker save -o node-api.tar thelastcookies/node-api
+```
+
+#### 加载
+
+将 tar 文件移动到目标主机后使用指令 `docker load` 加载到 Docker 中。
+
+```shell
+sudo docker load -i node-api.tar
+```
+
+#### 验证与运行
+
+检验是否加载成功。
+
+```shell
+sudo docker images
+```
+
+如果镜像文件存在于列表中，则表示加载成功。
+
+之后可以通过 `docker run` 指令运行容器。
 
 ```shell
 sudo docker run -d \
   --name node-api \
   -p 8192:8192 \
   --restart=unless-stopped \
-  node-api
+  thelastcookies/node-api
 ```
 
+### 线上部署
+
+使用 Docker 指令将本地镜像上传到远程镜像仓库，如 Docker Hub、私有仓库。
+
+```shell
+docker push [OPTIONS] <镜像名>:<标签>
+```
+
+#### 登录
+
+在推送镜像之前，需要登录到目标镜像仓库：
+
+```shell
+docker login -u <用户名>
+```
+
+如果使用私有仓库，需要提供仓库地址：
+
+```shell
+docker login <仓库地址> -u <用户名>
+```
+
+#### 标签（如果在构建时指定了标签，则跳过）
+
+使用 `docker tag` 指令将构建后的镜像标记为仓库格式的名称，类似 `<仓库地址>/<用户名>/<镜像名>:<标签>`的格式。
+
+示例：
+
+```shell
+docker tag node-api thelastcookies/node-api:latest
+```
+
+#### 推送
+
+使用 `docker push` 指令将镜像推送到远程仓库。
+
+如果推送到 Docker Hub，名称格式为：<用户名>/<镜像名>:<标签>。
+
+```shell
+docker push <用户名>/<镜像名>:<标签>
+```
+
+如果推送到私有仓库，格式为：<仓库地址>/<镜像名>:<标签>。
+
+```shell
+docker push <仓库地址>/<镜像名>:<标签>
+```
+
+示例：
+
+```shell
+docker push thelastcookies/node-api:latest
+```
+
+如果未指定 `:<标签>`，默认会推送 `latest` 标签。
+
+#### 验证
+
+成功推送后，可以在 Docker Hub 或私有仓库中查看该镜像。
+
+#### 拉取
+
+在目标主机上使用指令 `docker pull` 拉取镜像。
+
+```shell
+sudo docker pull thelastcookies/node-api:latest
+```
+
+拉取成功后即可开始新建容器运行服务。
