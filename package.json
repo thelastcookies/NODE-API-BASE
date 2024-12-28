@@ -11,8 +11,11 @@
 		"migrate": "dotenv -e .env/.env.development -- npx prisma migrate dev",
 		"generate": "dotenv -e .env/.env.development -- npx prisma generate",
 		"studio": "dotenv -e .env/.env.development -- npx prisma studio --browser chrome --port 5555",
-		"build": "esbuild src/index.ts --bundle --outdir=dist --platform=node",
-		"docker": "pnpm build && docker build -t node-api ."
+		"build": "pnpm build:docker",
+		"build:esbuild": "esbuild src/index.ts --bundle --outdir=dist --platform=node",
+		"build:docker": "pnpm build:esbuild && docker build --platform linux/aarch64 -t thelastcookies/node-api:latest .",
+		"build:docker:tar": "pnpm build:docker && docker save -o node-api.tar thelastcookies/node-api:latest",
+		"build:docker:push": "pnpm build:docker && docker push thelastcookies/node-api:latest"
 	},
 	"dependencies": {
 		"@koa/bodyparser": "^5.1.1",
