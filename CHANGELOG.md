@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.0](https://github.com/thelastcookies/NODE-API-BASE/compare/v0.0.0...v0.1.0) (2024-12-28)
+
+
+### Features
+
+* 扩展返回结构处理中间件功能 ([b82d9ae](https://github.com/thelastcookies/NODE-API-BASE/commit/b82d9aef4eab5a6a5e710afb55a7738fcb161a0f))
+* 新增 prisma 的自省和校准脚本，并同步更新 README.md ([45b59f1](https://github.com/thelastcookies/NODE-API-BASE/commit/45b59f1ace4ec4dced524a2128d4108f2305ffcd))
+* 新增示例接口 ([9fc7428](https://github.com/thelastcookies/NODE-API-BASE/commit/9fc74284fc37d45618d7d73463d58fed5ade05dd))
+* 新增简单的返回结构处理中间件 ([89fa84d](https://github.com/thelastcookies/NODE-API-BASE/commit/89fa84d397b0b5511a17bd40efec82cd17433f4f))
+
 ## 0.0.0 (2024-12-13)
 
 
